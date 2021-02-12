@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stateful-app
+  labels:
+    app: stateful-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stateful-app
+  template:
+    metadata:
+      labels:
+        app: stateful-app
+    spec:
+      containers:
+        - name: stateful-app-container
+          image: bhaumikshukla/py-stateful-sample:latest
+          env:
+            - name: SERVE_PORT
+              value: "8080"
+            - name: MYSQL_SERVICE_HOST
+              value: database
+            - name: DB_PW
+              value: "my-secret-pw"
+          ports:
+            - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: database
+  labels:
+    app: database
+spec:
+  replicas: 1
+  serviceName: "database"
+  selector:
+    matchLabels:
+      app: database
+  template:
+    metadata:
+      labels:
+        app: database
+    spec:
+      containers:
+        - name: stateful-app-container
+          image: mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "my-secret-pw"
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+          - name: db-volume
+            mountPath: /var/lib/mysql
+          - name: mysql-initdb
+            mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: db-volume
+          persistentVolumeClaim:
+            claimName: pvc-db
+        - name: mysql-initdb
+          configMap:
+            name: mysql-initdb-config
+
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: database
+  labels:
+    app: database
+spec:
+  ports:
+  - port: 3306
+    name: database
+  selector:
+    app: database
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-initdb-config
+data:
+  initdb.sql: |
+    Create database new_schema;
+    CREATE TABLE sample (ID int NOT NULL AUTO_INCREMENT,amount int NOT NULL,desc varchar(45) DEFAULT NULL,ts datetime NOT NULL,status int NOT NULL,PRIMARY KEY (ID),UNIQUE KEY ID_UNIQUE (ID))
+
