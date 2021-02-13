@@ -67,12 +67,12 @@ workflows:
       #    requires:
       #      - hold-apply
       - plan-destroy:
-          requires:
-            - apply
+      #    requires:
+      #      - apply
       #- hold-destroy:
       #    type: approval
       #    requires:
       #      - plan-destroy
       - destroy:
-          requires:
-            - hold-destroy
+      #    requires:
+      #      - hold-destroy
