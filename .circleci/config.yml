@@ -29,31 +29,30 @@ jobs:
           root: .
           paths:
             - .
-
-plan-destroy:
-  docker:
-    - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
-  steps:
-    - attach_workspace:
-        at: .
-    - run:
-        name: terraform create destroy plan
-        command: |
-          terraform plan -destroy -out tfdestroy
-    - persist_to_workspace:
-        root: .
-        paths:
-          - .
-destroy:
-  docker:
-    - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
-  steps:
-    - attach_workspace:
-        at: .
-    - run:
-        name: terraform destroy
-        command: |
-          terraform apply -auto-approve tfdestroy
+  plan-destroy:
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: terraform create destroy plan
+          command: |
+            terraform plan -destroy -out tfdestroy
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+  destroy:
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: terraform destroy
+          command: |
+            terraform apply -auto-approve tfdestroy
 workflows:
   version: 2
   plan_approve_apply:
