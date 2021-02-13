@@ -59,5 +59,20 @@ workflows:
   plan_approve_apply:
     jobs:
       - plan-apply
-      - plan-destroy
-      - destroy
+      #- hold-apply:
+      #    type: approval
+      #    requires:
+      #      - plan-apply
+      #- apply:
+      #    requires:
+      #      - hold-apply
+      - plan-destroy:
+          requires:
+            - plan-apply
+      - hold-destroy:
+          type: approval
+          requires:
+            - plan-destroy
+      - destroy:
+          requires:
+            - hold-destroy
