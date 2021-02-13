@@ -63,8 +63,6 @@ jobs:
           name: kube config
           command: |
             terraform output kubeconfig>~/.kube/config
-          name: kube apply
-          command: |
             kubectl apply -f ./kubemanifest
   kube-delete:
     docker:
