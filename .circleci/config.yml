@@ -53,6 +53,29 @@ jobs:
           name: terraform destroy
           command: |
             terraform apply -auto-approve tfdestroy
+  kube-apply:
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: kube config
+          command: |
+            terraform output kubeconfig>~/.kube/config
+          name: kube apply
+          command: |
+            kubectl apply -f ./kubemanifest
+  kube-delete:
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: kube delete
+          command: |
+            kubectl delete -f ./kubemanifest
 workflows:
   version: 2
   plan_approve_apply:
@@ -65,13 +88,19 @@ workflows:
       - apply:
           requires:
             - hold-apply
-      - plan-destroy:
+      - kube-apply:
           requires:
             - apply
+      - plan-destroy:
+          requires:
+            - kube-apply
       - hold-destroy:
           type: approval
           requires:
             - plan-destroy
-      - destroy:
+      - kube-delete:
           requires:
             - hold-destroy
+      - destroy:
+          requires:
+            - kube-delete
