@@ -62,6 +62,7 @@ jobs:
       - run:
           name: kube config
           command: |
+            mkdir ~/.kube
             terraform output kubeconfig>~/.kube/config
             curl -L https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.3.0/heptio-authenticator-aws_0.3.0_linux_amd64 -o /usr/local/bin/aws-iam-authenticator && chmod +x /usr/local/bin/aws-iam-authenticator
             kubectl apply -f ./kubemanifest
@@ -79,17 +80,17 @@ workflows:
   version: 2
   plan_approve_apply:
     jobs:
-      - plan-apply
-      - hold-apply:
-          type: approval
-          requires:
-            - plan-apply
-      - apply:
-          requires:
-            - hold-apply
-      - kube-apply:
-          requires:
-            - apply
+      # - plan-apply
+      # - hold-apply:
+      #     type: approval
+      #     requires:
+      #       - plan-apply
+      # - apply:
+      #     requires:
+      #       - hold-apply
+      - kube-apply
+          #requires:
+          #  - apply
       - plan-destroy:
           requires:
             - kube-apply
