@@ -39,7 +39,7 @@ plan-destroy:
     - run:
         name: terraform create destroy plan
         command: |
-          terraform plan -destroy -out tfdestroy -var-file variables.tfvars
+          terraform plan -destroy -out tfdestroy -var-file variables.tf
     - persist_to_workspace:
         root: .
         paths:
