@@ -10,7 +10,7 @@ jobs:
           name: terraform init & plan
           command: |
             terraform init -input=false
-            terraform plan -out tfapply -var-file variables.tfvars
+            terraform plan -out tfapply -var-file variables.tf
       - persist_to_workspace:
           root: .
           paths:
