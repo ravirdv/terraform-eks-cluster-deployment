@@ -89,3 +89,16 @@ data:
     Create database new_schema;
     CREATE TABLE sample (ID int NOT NULL AUTO_INCREMENT,amount int NOT NULL,desc varchar(45) DEFAULT NULL,ts datetime NOT NULL,status int NOT NULL,PRIMARY KEY (ID),UNIQUE KEY ID_UNIQUE (ID))
 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stateful
+  labels:
+    app: stateful
+spec:
+  ports:
+  - port: 8080
+    name: stateful
+  selector:
+    app: stateful-app

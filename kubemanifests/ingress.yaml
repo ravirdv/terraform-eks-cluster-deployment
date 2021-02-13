@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: api-ingress
+  annotations:
+    # use the shared ingress-nginx
+    kubernetes.io/ingress.class: "nginx"
+    nginx.org/rewrites: "serviceName=stateful rewrite=/;serviceName=stateless rewrite=/$2"
+spec:
+  rules:
+    - host: bhaumik.sre-workshop-2.nl
+      http:
+        paths:
+          - path: /stateful
+            backend:            
+                serviceName: "stateful"  
+                servicePort: 8080
+          - path: /stateless
+            backend:            
+                serviceName: "stateless"  
+                servicePort: 8000
