@@ -62,6 +62,7 @@ jobs:
       - run:
           name: kube config
           command: |
+            apk add curl
             mkdir ~/.kube
             terraform output kubeconfig>~/.kube/config
             curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o /tmp/kubectl && chmod +x /tmp/kubectl
